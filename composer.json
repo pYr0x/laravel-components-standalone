@@ -1,0 +1,25 @@
+{
+  "name": "twentytwo/orm-test",
+  "description": "eloquent orm standalone test",
+  "minimum-stability": "dev",
+  "license": "proprietary",
+  "authors": [
+    {
+      "name": "Julian Kern",
+      "email": "email@example.com"
+    }
+  ],
+  "autoload": {
+    "psr-4": {
+      "twentytwo\\": "twentytwo/",
+      "app\\": "applications/"
+    }
+  },
+  "require": {
+    "illuminate/database": "5.5.*",
+    "php-di/php-di": "^6.0.2",
+    "acclimate/container": "dev-master",
+    "illuminate/events": "5.5.x-dev",
+    "illuminate/support": "5.5.x-dev"
+  }
+}
