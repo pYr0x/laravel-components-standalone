@@ -11,7 +11,7 @@
  */
 
 
-namespace app\facades;
+namespace twentytwo\facades;
 
 use Illuminate\Support\Facades\Facade;
 

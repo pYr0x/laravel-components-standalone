@@ -13,8 +13,6 @@
 use Acclimate\Container\CompositeContainer;
 use Acclimate\Container\ContainerAcclimator;
 use app\events\FooEvent;
-use app\facades\AliasLoader;
-use app\facades\SomeServiceFacade;
 use app\listeners\FooEventSubscriber;
 use app\listeners\BarListener;
 use app\models\Auftraggeber;
@@ -34,6 +32,9 @@ use Illuminate\Support\Facades\Facade;
 use Psr\Container\ContainerInterface;
 use twentytwo\BaseModel;
 use twentytwo\Database;
+use twentytwo\facades\AliasLoader;
+use twentytwo\facades\DB;
+use twentytwo\facades\SomeServiceFacade;
 
 require "vendor/autoload.php";
 
@@ -60,7 +61,7 @@ $builder->useAutowiring(true);
 
 
 $builder->addDefinitions([
-    'Database' => function(ContainerInterface $c) use ($capsule) {
+    'db' => function(ContainerInterface $c) use ($capsule) {
         $capsule->addConnection([
             'driver'    => 'mysql',
             'host'      => 'localhost',
@@ -99,6 +100,8 @@ $builder->addDefinitions([
         //$foo = "bar";
     //}
 
+    'some.service' => DI\create(\twentytwo\Test::class),
+    'aa' => 'foo'
 ]);
 
 $builder->addDefinitions(__DIR__.DIRECTORY_SEPARATOR.'applications'.DIRECTORY_SEPARATOR.'models'.DIRECTORY_SEPARATOR.'ModelDefinitions.php');
@@ -113,20 +116,27 @@ $container->addContainer($phpDIContainer);
 
 
 
-$db = $phpDIContainer->make("Database");
+//$db = $phpDIContainer->make("Database");
 
 
 
+$bridge = new \twentytwo\Bridge($container);
 
 
 /** FACADES */
 //https://www.sitepoint.com/how-laravel-facades-work-and-how-to-use-them-elsewhere/
 $aliases = [
-    'FancyName' => SomeServiceFacade::class,
+  'db' => \twentytwo\facades\DB::class,
+  'FancyName' => SomeServiceFacade::class,
 ];
-Facade::setFacadeApplication($container);
+Facade::setFacadeApplication($bridge);
 AliasLoader::getInstance($aliases)->register();
 
+echo FancyName::someMethod("julian");
+
+print_r(DB::getDefaultConnection());
+//DB::insert();
+//DB::table()->find();
 
 
 
@@ -151,7 +161,7 @@ foreach ($subscribe as $subscriber) {
 }
 
 /** MODEL EVENTS */
-Leistungsempfaenger::observe(LeistungsempfaengerObserver::class);
+//Leistungsempfaenger::observe(LeistungsempfaengerObserver::class);
 
 
 
@@ -232,7 +242,7 @@ Leistungsempfaenger::observe(LeistungsempfaengerObserver::class);
 
 
 
-$le = Leistungsempfaenger::find(2);
+//$le = Leistungsempfaenger::find(2);
 
 
 //$queries = $db->connection('mdm')->getQueryLog();
@@ -244,7 +254,7 @@ $le = Leistungsempfaenger::find(2);
 //$dispatcher->listen([FooEvent::class], BarListener::class);
 //$dispatcher->subscribe(FooEventSubscriber::class);
 // Firing the event
-$dispatcher->fire(new FooEvent("foo"));
+//$dispatcher->fire(new FooEvent("foo"));
 
 
 
